@@ -14,17 +14,20 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    buildah \
-    ca-certificates \
-    curl \
-    git \
-    groff \
-    jq \
-    unzip \
-    xz-utils \
-    zip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+  buildah \
+  ca-certificates \
+  curl \
+  git \
+  unzip \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Strip unnecessary stuff
+RUN rm -rf /usr/share/doc/* \
+  /usr/share/man/* \
+  /usr/share/local/* \
+  /var/cache/* \
+  /var/log/*
 
 # Runner user
 RUN adduser --disabled-password --gecos "" --uid 1001 runner
@@ -37,7 +40,7 @@ WORKDIR /home/runner
 
 # Install dumb-init
 RUN curl -f -L -o /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${ARCH} \
-    && chmod +x /usr/local/bin/dumb-init
+  && chmod +x /usr/local/bin/dumb-init
 
 # Install GitHub Actions Runner
 RUN curl -L -o runner.tar.gz https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz \
@@ -49,16 +52,17 @@ RUN curl -L -o runner.tar.gz https://github.com/actions/runner/releases/download
 
 # Install container hooks (needed in Kubernetes)
 RUN curl -f -L -o runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip \
-    && unzip runner-container-hooks.zip -d ./k8s \
-    && rm runner-container-hooks.zip
+  && unzip runner-container-hooks.zip -d ./k8s \
+  && rm runner-container-hooks.zip
 
-# Install AWS CLI v2
+# Install AWS CLI v2 (manual copy, no ./install)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
-    && ./aws/install \
-    && rm -rf aws awscliv2.zip
+  && unzip awscliv2.zip \
+  && cp -r aws/dist /opt/awscli \
+  && ln -s /opt/awscli/aws /usr/local/bin/aws \
+  && rm -rf aws awscliv2.zip
 
-    # Make the rootless runner directory and externals directory executable
+# Make the rootless runner directory and externals directory executable
 RUN mkdir -p /run/user/1001 \
   && chown runner:runner /run/user/1001 \
   && chmod a+x /run/user/1001 \
