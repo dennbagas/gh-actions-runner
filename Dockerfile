@@ -18,10 +18,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     git \
+    groff \
     jq \
     unzip \
-    python3 \
-    python3-pip \
     xz-utils \
     zip \
     && apt-get clean \
