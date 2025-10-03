@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \
   git \
+  libicu74 \
   unzip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
@@ -84,6 +85,8 @@ ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
 ENV HOME=/home/runner
 ENV PATH="${PATH}:${HOME}/.local/bin:/home/runner/bin"
 ENV ImageOS=ubuntu24
+ENV BUILDAH_ISOLATION=chroot
+ENV STORAGE_DRIVER=vfs
 
 # No group definition, as that makes it harder to run docker.
 USER runner
