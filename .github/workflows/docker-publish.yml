@@ -37,6 +37,6 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ghcr.io/dennbagas/gh-actions-runner:0.0.1
+        tags: ghcr.io/dennbagas/gh-actions-runner:0.0.2
         cache-from: type=gha
         cache-to: type=gha,mode=max

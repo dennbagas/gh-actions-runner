@@ -7,10 +7,11 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     buildah \
     curl \
-    unzip \
     ca-certificates \
     git \
     jq \
+    podman \
+    unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
